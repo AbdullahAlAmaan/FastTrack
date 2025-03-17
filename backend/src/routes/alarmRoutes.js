@@ -1,13 +1,12 @@
-// backend/src/routes/alarmRoutes.js
 const express = require('express');
 const router = express.Router();
 const alarmController = require('../controllers/alarmController');
-const authMiddleware = require('../middleware/authMiddleware'); // Import the auth middleware
+const multer = require('multer');
 
-// Define routes for alarms
-router.post('/', authMiddleware, alarmController.createAlarm); // Protect this route
-router.get('/', alarmController.getAlarms); // Get all alarms
-router.put('/:id', authMiddleware, alarmController.updateAlarm); // Protect this route
-router.delete('/:id', authMiddleware, alarmController.deleteAlarm); // Protect this route
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.get('/alarms', alarmController.getAlarms);
+router.post('/upload', upload.single('file'), alarmController.uploadAlarm);
 
 module.exports = router;

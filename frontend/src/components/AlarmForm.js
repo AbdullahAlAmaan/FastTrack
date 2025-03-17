@@ -6,36 +6,60 @@ import { parseScreenshot } from '../utils/ocr'; // Import the OCR utility functi
 const AlarmForm = ({ addAlarm }) => {
     const [file, setFile] = useState(null);
     const [extractedTimes, setExtractedTimes] = useState([]); // State to hold extracted times
+    const [loading, setLoading] = useState(false); // State to manage loading status
+    const [error, setError] = useState(null); // State to manage error messages
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+    const handleFileChange = async (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        console.log('Selected file:', selectedFile); // Log the selected file
+
+        if (selectedFile) {
+            // Automatically process the file when selected
+            await handleSubmit(selectedFile);
+        }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (file) => {
+        setLoading(true); // Set loading state
+        setError(null); // Reset error state
 
-        if (!file) {
-            alert("Please upload a file.");
-            return;
+        try {
+            // Call the OCR function to parse the uploaded file
+            const parsedTimes = await parseScreenshot(file);
+            console.log('Parsed times:', parsedTimes); // Log the parsed times
+
+            // Assuming parsedTimes contains both suhoor and iftar times
+            const date = new Date().toLocaleDateString(); // Get the current date
+            const newAlarm = { date, suhoor: parsedTimes.suhoor, iftar: parsedTimes.iftar };
+
+            // Update the state with the new alarm
+            setExtractedTimes(prev => [...prev, newAlarm]);
+
+            // Optionally, send the new alarm to the backend
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/alarms`, newAlarm);
+            addAlarm(response.data); // Assuming the response contains the saved alarm
+
+        } catch (error) {
+            console.error('Error processing file:', error);
+            setError('Failed to process the file. Please try again.'); // Set error message
+        } finally {
+            setLoading(false); // Reset loading state
         }
-
-        // Call the OCR function to parse the uploaded file
-        const parsedTimes = await parseScreenshot(file);
-        
-        // Assuming parsedTimes contains both suhoor and iftar times
-        const date = new Date().toLocaleDateString(); // Get the current date
-        setExtractedTimes(prev => [...prev, { date, suhoor: parsedTimes.suhoor, iftar: parsedTimes.iftar }]);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form>
             <input 
                 type="file" 
                 onChange={handleFileChange} 
                 accept=".pdf, .jpg, .jpeg, .png" 
                 required 
             />
-            <button type="submit">Set Alarm</button>
+            <button type="submit" disabled={loading}>
+                {loading ? 'Processing...' : 'Set Alarm'}
+            </button>
+            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
             <div>
                 <h3>Extracted Times</h3>
                 <table>

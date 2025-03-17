@@ -1,4 +1,3 @@
-// backend/src/server.js
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -9,7 +8,7 @@ const alarmRoutes = require('./routes/alarmRoutes'); // Import alarm routes
 dotenv.config(); // Load environment variables
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
@@ -19,7 +18,7 @@ app.use(bodyParser.json());
 connectDB(); // Call the connectDB function
 
 // Use alarm routes
-app.use('/api/alarms', alarmRoutes);
+app.use('/api', alarmRoutes); // Change this line
 
 // Basic route
 app.get('/', (req, res) => {

@@ -1,52 +1,59 @@
-// backend/src/controllers/alarmController.js
-const Alarm = require('../models/alarmModel'); // Import the Alarm model
+const Alarm = require('../models/alarmModel');
+const { extractTextFromImage } = require('../utils/ocr');
 
-// Create a new alarm
-exports.createAlarm = async (req, res) => {
-    try {
-        const { suhoor, iftar } = req.body;
-        const newAlarm = new Alarm({ suhoor, iftar });
-        await newAlarm.save();
-        res.status(201).json(newAlarm);
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating alarm', error });
-    }
-};
 
-// Get all alarms
 exports.getAlarms = async (req, res) => {
     try {
-        const alarms = await Alarm.find();
-        res.status(200).json(alarms);
+        const alarms = await Alarm.find(); // Fetch alarms from the database
+        res.status(200).json(alarms); // Return the alarms
     } catch (error) {
         res.status(500).json({ message: 'Error fetching alarms', error });
     }
 };
 
-// Update an alarm
-exports.updateAlarm = async (req, res) => {
+exports.uploadAlarm = async (req, res) => {
     try {
-        const { id } = req.params;
-        const updatedAlarm = await Alarm.findByIdAndUpdate(id, req.body, { new: true });
-        if (!updatedAlarm) {
-            return res.status(404).json({ message: 'Alarm not found' });
+        const file = req.file;
+        if (!file) {
+            return res.status(400).json({ message: 'No file uploaded' });
         }
-        res.status(200).json(updatedAlarm);
+
+        // Convert the file to a base64 string for the API
+        const imageUrl = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+        // Call the OCR function to extract text from the image
+        const extractedText = await extractTextFromImage(imageUrl);
+        console.log('Extracted Text:', extractedText);
+
+        // Parse the extracted text to find Sehri and Iftar times
+        const times = parseTimes(extractedText);
+        const newAlarm = { 
+            date: new Date().toLocaleDateString(),
+            suhoor: times.sehri,
+            iftar: times.iftar 
+        };
+
+        // Save the new alarm to the database
+        const savedAlarm = await Alarm.create(newAlarm);
+        res.status(201).json(savedAlarm);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating alarm', error });
+        console.error('Error processing file:', error);
+        res.status(500).json({ message: 'Error processing file', error });
     }
 };
 
-// Delete an alarm
-exports.deleteAlarm = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedAlarm = await Alarm.findByIdAndDelete(id);
-        if (!deletedAlarm) {
-            return res.status(404).json({ message: 'Alarm not found' });
+const parseTimes = (text) => {
+    const lines = text.split('\n');
+    let sehri, iftar;
+
+    lines.forEach(line => {
+        if (line.includes('SEHRI')) {
+            sehri = line.split(' ').pop();
         }
-        res.status(204).send(); // No content
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting alarm', error });
-    }
+        if (line.includes('IFTAR')) {
+            iftar = line.split(' ').pop();
+        }
+    });
+
+    return { sehri, iftar };
 };
