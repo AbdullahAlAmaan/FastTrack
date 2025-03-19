@@ -41,39 +41,36 @@ export default async function handler(req, res) {
 // Helper function to parse timings from the extracted text
 const parseTimings = (text) => {
   const lines = text.split('\n');  // Split the extracted text into lines
+  const dates = [];
   const sehriTimes = [];
-  const iftarTimes = [];
 
-  // Define regex patterns to capture times (hh:mm AM/PM)
+  // Define regex patterns to capture the dates and times (Sehri times)
+  const datePattern = /\d{1,2} [A-Za-z]{3} \d{4}/;  // Match date format like 27 Mar 2025
   const timePattern = /(\d{2}:\d{2} [APM]{2})/g;  // Match time format hh:mm AM/PM
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
-    // Extract all times from the current line
-    const matches = [...line.matchAll(timePattern)];
+    // Check if the line contains a date
+    const dateMatch = line.match(datePattern);
+    if (dateMatch) {
+      // If a date is found, store it
+      dates.push(dateMatch[0]);
 
-    // If there is at least one match, we expect Sehri time first, then Iftar time
-    if (matches.length > 0) {
-      // Capture the first time as Sehri, and the second one as Iftar if available
-      if (i % 2 === 0) {
-        // If we're on an even line (Sehri)
-        sehriTimes.push(matches[0][0]);
-        // If the next line has an Iftar time, capture that
-        if (i + 1 < lines.length) {
-          const nextLineMatches = [...lines[i + 1].matchAll(timePattern)];
-          if (nextLineMatches.length > 0) {
-            iftarTimes.push(nextLineMatches[0][0]);
-          }
+      // If the next line contains a Sehri time, capture that too
+      if (i + 1 < lines.length) {
+        const nextLineMatches = [...lines[i + 1].matchAll(timePattern)];
+        if (nextLineMatches.length > 0) {
+          sehriTimes.push(nextLineMatches[0][0]);  // Store Sehri time
         }
       }
     }
   }
 
-  // Log the extracted times for debugging
+  // Log the extracted dates and Sehri times for debugging
+  console.log("Dates:", dates);
   console.log("Sehri Times:", sehriTimes);
-  console.log("Iftar Times:", iftarTimes);
 
   // Return both arrays
-  return { sehri: sehriTimes, iftar: iftarTimes };
+  return { dates, sehri: sehriTimes };
 };
