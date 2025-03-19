@@ -1,47 +1,40 @@
-// src/pages/index.js
-import { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import AlarmForm from '../components/AlarmForm';
-import AlarmList from '../components/AlarmList';
-import axios from 'axios';
-import '../styles/globals.css';
+import React, { useState, useEffect } from 'react';
+import TimezoneSelector from '../components/TimeZoneSelector'; // Adjust path if necessary
+import TimingDisplay from '../components/TimingDisplay'; // Adjust path if necessary
+import NotificationSettings from '../components/NotificationSettings'; // Adjust path if necessary
+import { fetchTimings } from '../utils/fetchTimings'; // Adjust path if necessary
 
-const Home = () => {
-    const [alarms, setAlarms] = useState([]);
+const IndexPage = () => {
+  const [timezone, setTimezone] = useState('toronto'); // Default timezone
+  const [timings, setTimings] = useState({ sehri: [], iftar: [] }); // Default empty arrays
+  const [offset, setOffset] = useState(20); // Default offset to 20 minutes
 
-    const addAlarm = (alarm) => {
-        setAlarms([...alarms, alarm]);
-    };
-    const fetchAlarms = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/alarms`);
-            setAlarms(response.data);
-        } catch (error) {
-            console.error('Error fetching alarms:', error.response ? error.response.data : error.message);
-        }
+  // Fetch timings whenever the timezone is changed
+  useEffect(() => {
+    const fetchData = async () => {
+      const timingData = await fetchTimings(timezone);
+      setTimings(timingData);  // Set timings (either Sehri or Iftar) from the API
     };
 
-    // Fetch alarms from the backend
-    useEffect(() => {
-        const Alarms = async () => {
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/alarms`);
-                setAlarms(response.data);
-            } catch (error) {
-                console.error('Error fetching alarms:', error);
-            }
-        };
+    fetchData();
+  }, [timezone]); // Fetch data when the timezone changes
 
-        fetchAlarms();
-    }, []);
+  const handleTimezoneChange = (newTimezone) => {
+    setTimezone(newTimezone); // Update timezone
+  };
 
-    return (
-        <div>
-            <Header />
-            <AlarmForm addAlarm={addAlarm} />
-            <AlarmList alarms={alarms} /> {/* Pass alarms to AlarmList */}
-        </div>
-    );
+  const handleOffsetChange = (newOffset) => {
+    setOffset(newOffset); // Update offset for notifications
+  };
+
+  return (
+    <div>
+      <h1>FastTrack</h1>
+      <TimezoneSelector onTimezoneChange={handleTimezoneChange} />
+      <TimingDisplay timings={timings} />
+      <NotificationSettings onSetOffset={handleOffsetChange} />
+    </div>
+  );
 };
 
-export default Home;
+export default IndexPage;

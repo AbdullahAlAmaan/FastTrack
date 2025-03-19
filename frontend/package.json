@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/vision": "^5.0.0",
     "axios": "^1.8.3",
+    "googleapis": "^146.0.0",
     "next": "15.2.1",
     "pdfjs-dist": "^4.10.38",
     "react": "^19.0.0",
