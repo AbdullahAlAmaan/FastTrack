@@ -30,9 +30,10 @@ const IndexPage = () => {
   return (
     <div>
       <h1>FastTrack</h1>
+      <NotificationSettings onSetOffset={handleOffsetChange} />
       <TimezoneSelector onTimezoneChange={handleTimezoneChange} />
       <TimingDisplay timings={timings} />
-      <NotificationSettings onSetOffset={handleOffsetChange} />
+    
     </div>
   );
 };

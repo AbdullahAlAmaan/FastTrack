@@ -16,6 +16,7 @@ export default async function handler(req, res) {
       // Call the Vision API to process the image
       const [result] = await client.textDetection(imageUrl);
       //console.log('Extracted text from image:', result.fullTextAnnotation.text);
+      
 
       if (!result.fullTextAnnotation) {
         throw new Error('No text detected in the image.');
@@ -45,31 +46,23 @@ const parseTimings = (text) => {
   const sehriTimes = [];
 
   // Define regex patterns to capture the dates and times (Sehri times)
-  const datePattern = /\d{1,2} [A-Za-z]{3} \d{4}/;  // Match date format like 27 Mar 2025
-  const timePattern = /(\d{2}:\d{2} [APM]{2})/g;  // Match time format hh:mm AM/PM
+  const datePattern = /\d{1,2} [A-Za-z]{3} \d{4}/;  // Match date format like 01 Mar 2025
+  const timePattern = /\d{2}:\d{2} [APM]{2}/g;  // Match time format hh:mm AM/PM
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    
-    // Check if the line contains a date
-    const dateMatch = line.match(datePattern);
-    if (dateMatch) {
-      // If a date is found, store it
-      dates.push(dateMatch[0]);
+  // Start at line 7 and iterate through the lines with a step of 4
+  for (let i = 7; i < lines.length; i++) {
+    // Ensure there are enough lines to avoid accessing undefined indices
+    if (lines[i + 1] && lines[i + 3]) {
+      const sehriTime = lines[i + 1].match(timePattern);  // Sehri time is in [8]
+      const date = lines[i + 3].match(datePattern);  // Date is in [10]
 
-      // If the next line contains a Sehri time, capture that too
-      if (i + 1 < lines.length) {
-        const nextLineMatches = [...lines[i + 1].matchAll(timePattern)];
-        if (nextLineMatches.length > 0) {
-          sehriTimes.push(nextLineMatches[0][0]);  // Store Sehri time
-        }
+      // Only add to arrays if both Sehri time and date were found
+      if (sehriTime && date) {
+        sehriTimes.push(sehriTime[0]);
+        dates.push(date[0]);
       }
     }
   }
-
-  // Log the extracted dates and Sehri times for debugging
-  console.log("Dates:", dates);
-  console.log("Sehri Times:", sehriTimes);
 
   // Return both arrays
   return { dates, sehri: sehriTimes };
