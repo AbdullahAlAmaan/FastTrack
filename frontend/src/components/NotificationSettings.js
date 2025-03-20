@@ -8,19 +8,20 @@ const NotificationSettings = ({ onSetOffset }) => {
   };
 
   const handleSave = () => {
-    onSetOffset(offset);
+    onSetOffset(offset);  // Pass the offset to the parent component
+    alert('Time Saved! Alarm will go off at the set offset.'); // Show alert
   };
 
   return (
     <div>
-      <label htmlFor="offset">Set Offset for Notifications (minutes):</label>
+      <label htmlFor="offset">Set time</label>
       <input
         id="offset"
         type="number"
         value={offset}
         onChange={handleChange}
       />
-      <button onClick={handleSave}>Save Offset</button>
+      <button onClick={handleSave}>Save Time</button>
     </div>
   );
 };

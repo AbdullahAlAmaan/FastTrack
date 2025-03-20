@@ -1,126 +1,255 @@
-/* src/styles/globals.css */
-
-/* Reset some default styles */
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  
+  body {
+    background-image: url('../../public/body.png');  /* Path to your image */
+    background-size: cover; /* Cover the entire screen */
+    background-position: center center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* Container to hold the entire UI */
+/* Ensure the container for the whole UI takes up the full height and doesn't collapse */
+.container {
+  width: 98%;
+  max-width: 1500px;
+  padding: 200px;
+  background-image: url('../../public/cont.png');  /* Path to your image */
+  background-size: cover; /* Cover the entire container */
+  background-position: center center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-color: #fff;
+  display: flex;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: white;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure it takes up at least full viewport height */
+  position: relative; /* To position the pseudo-element */
 }
 
+/* Adding a semi-transparent overlay to reduce the image's vividness */
+.container::before {
+  content: ''; /* Required to create the pseudo-element */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.05); /* Adjust the alpha (0.4) for opacity */
+  border-radius: 10px; /* Make sure it matches the container's border radius */
+  z-index: -1; /* Ensure the overlay is below the content */
+}
 
-table {
+ 
+  /* Header Section */
+  .header {
+    background-color: #012811;
+    padding: 30px;
+    text-align: center;
+    border-radius: 40px;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 10px 10px 40px 40px;
+  }
+  
+  .header h1 {
+    font-size: 45px;
+  }
+  
+  /* Date Selector */
+  .date-selector {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .date-selector label {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .date-selector input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    background-color: #fff;
+    margin-left: 10px;
+
+  }
+  
+  .date-selector button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #012811;
+    color: white;
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 20px;
+    border-color: #2fa25d;
+    cursor: pointer;
+  }
+  
+  .date-selector button:hover {
+    background-color: #038941;
+  }
+  .timezone-selector {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  .timezone-selector label {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-right: 10px;
+  }
+  
+  .timezone-selector select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    background-color: #fff;
+    margin-left: 10px;
+    align-items: center;
+  }
+
+
+  
+  /* Table Section */
+  .table-section {
+    margin-top: 30px;
+    overflow-y: auto; /* Prevent table overflow */
+    max-height: 400px; /* Set max height if needed */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-width: 3px;
+    border-style: solid ;
+    border-color:white ;
+  }
+  
+  
+  .table-section table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+  }
+  
+ /* General styles for th and td */
+.table-section th, .table-section td {
+  padding: 12px;
+  text-align: center;
+  font-size: 20px;
+  color: white; /* Set default text color to white */
+  border: 1px solid #ddd;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+/* Table header styling */
+.table-section th {
+  background-color: #012811;
+  color: white; /* Ensure header text is white */
 }
 
-th {
-    background-color: #4CAF50; /* Green background for header */
-    color: white; /* White text */
+/* Even row styling */
+.table-section tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2; /* Zebra striping for rows */
+.table-section tr:nth-child(even) td {
+  color: black; /* Override color for text inside even rows */
 }
 
-tr:hover {
-    background-color: #ddd; /* Highlight row on hover */
+/* Hover effect for all rows */
+.table-section tr:hover {
+  background-color: #012811; /* Dark background when hovered */
+  color: white; /* Text color becomes white on hover */
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    line-height: 1.6;
+/* Ensure the text inside even rows becomes white when hovered */
+.table-section tr:nth-child(even):hover td {
+  color: white; /* Change text to white on hover for even rows */
 }
 
-/* Header styles */
-header {
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Main container styles */
-.container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Form styles */
-form {
+  
+  /* Offset Section */
+  .offset-section {
+    margin-top: 30px;
     display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-}
-
-input[type="file"] {
-    margin: 10px 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .offset-section label {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .offset-section input {
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    padding: 10px;
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 80px;
+  }
+  
+  .offset-section button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #023d1a;
+    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+  }
+  
+  .offset-section button:hover {
+    background-color: #023d1a;
+  }
+    
+  /* Test Alarm Button */
+  .alarm-sound {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+ /* Test Alarm Button */
+.test-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #012811;
+  color: white;
+  border-style: solid;
+  border-width: 3px;
+  border-radius: 20px;
+  border-color: #2fa25d;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
-button:hover {
-    background-color: #45a049; /* Darker green on hover */
-}
-
-/* Alarm list styles */
-h2 {
-    margin: 20px 0;
-    color: #4CAF50; /* Green color for headings */
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    background: #f1f1f1;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-li:hover {
-    background: #e1e1e1; /* Slightly darker on hover */
-}
-
-/* Responsive design */
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-    }
-
-    button {
-        padding: 8px;
-    }
-
-    input[type="file"] {
-        padding: 8px;
-    }
+/* Hover effect for the Test Alarm button */
+.test-button:hover {
+  background-color: #038941;  /* Slightly lighter green on hover */
 }

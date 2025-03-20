@@ -8,7 +8,6 @@ const TimingDisplay = ({ timings }) => {
 
   return (
     <div>
-      <h3>Sehri Times</h3>
       <table>
         <thead>
           <tr>
